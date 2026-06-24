@@ -739,3 +739,17 @@ class ProviderInterface(metaclass=SingletonMeta):
                 __doc__=f"OBBject with results of type {name}",
             )
         return annotations
+
+
+# Module-level __getattr__ for lazy OBBject_* resolution.
+# Auto-generated package modules import OBBject_* names at module level,
+# but they're dynamically created by _generate_return_annotations().
+def __getattr__(name: str):
+    """Lazy-resolve OBBject_* names from the ProviderInterface singleton."""
+    if name.startswith("OBBject_"):
+        annots = ProviderInterface().return_annotations
+        model_key = name.removeprefix("OBBject_")
+        if model_key in annots:
+            return annots[model_key]
+        raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
